@@ -31,11 +31,13 @@ json_encode = LazyEncoder().encode
 class QuillWidget(forms.Textarea):
     class Media:
         js = MEDIA_JS
-        css = {"all": MEDIA_CSS}
+        css = MEDIA_CSS if isinstance(MEDIA_CSS, dict) else {"all": MEDIA_CSS}
 
     def __init__(self, config_name="default", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.config = DEFAULT_CONFIG.copy()
+        self.custom_js = getattr(settings, "QUILL_CUSTOM_JS", None)
+        self.custom_css = getattr(settings, "QUILL_CUSTOM_CSS", None)
         configs = getattr(settings, "QUILL_CONFIGS", None)
         if configs:
             if isinstance(configs, Mapping):
@@ -80,6 +82,8 @@ class QuillWidget(forms.Textarea):
                     "config": json_encode(self.config),
                     "quill": final_attrs.get("quill", None),
                     "value": final_attrs.get("value", None),
+                    "QUILL_CUSTOM_JS": self.custom_js,
+                    "QUILL_CUSTOM_CSS": self.custom_css,
                 },
             )
         )

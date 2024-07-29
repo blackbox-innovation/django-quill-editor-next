@@ -85,8 +85,78 @@ class QuillPostAdmin(admin.ModelAdmin):
 ![admin-sample](https://raw.githubusercontent.com/LeeHanYeong/django-quill-editor/master/_assets/admin-sample.png)
 
 
+## Custom JS and CSS
 
+By default, django-quill-editor uses CDN links for its dependencies. However, you can use your own static files for better control and offline functionality. To do this, you need to define `QUILL_CUSTOM_JS` and `QUILL_CUSTOM_CSS` in your Django settings.
 
+### Required Files
+
+To use custom static files, you need to include the following:
+
+1. Highlight.js (CSS and JS)
+2. Quill.js (CSS and JS)
+3. Quill Image Compress (JS)
+4. Quill Resize Module (JS and CSS)
+
+### Configuration
+
+In your Django `settings.py`, add the following:
+
+```
+QUILL_CUSTOM_JS = [
+    'path/to/highlight.min.js',
+    'path/to/quill.min.js',
+    'path/to/quill.imageCompressor.min.js',
+    'path/to/quill-resize-module.min.js',
+]
+
+QUILL_CUSTOM_CSS = [
+    'path/to/highlight-darcula.min.css',
+    'path/to/quill.snow.css',
+    'path/to/quill-resize.min.css',
+]
+```
+### Using django-npm
+
+Alternatively, you can use [django-npm](https://github.com/kevin1024/django-npm) to manage your static files. Here's how you can set it up:
+
+1. Install django-npm:
+
+```
+pip install django-npm
+```
+
+2. Add 'django_npm' to your INSTALLED_APPS in settings.py.
+
+3. Configure django-npm in your settings.py:
+
+```
+NPM_STATIC_FILES_PREFIX = "vendor"
+
+NPM_FILE_PATTERNS = {
+    "quill": ["dist/quill.js", "dist/quill.snow.css"],
+    "dropzone": ["dist/dropzone.css"],
+    "quill-image-compress/dist/quill.imageCompressor.min.js": ["dist/quill.imageCompressor.min.js"],
+    "@highlightjs/cdn-assets": ["highlight.min.js", "styles/darcula.min.css"],
+    "@botom/quill-resize-module": [
+        "dist/quill-resize-module.min.js",
+    ],
+}
+
+QUILL_CUSTOM_JS = [
+    "vendor/quill-image-compress/dist/quill.imageCompressor.min.js",
+    "vendor/@highlightjs/cdn-assets/highlight.min.js",
+    "vendor/@botom/quill-resize-module/dist/quill-resize-module.min.js",
+    "vendor/quill/dist/quill.js",
+]
+
+QUILL_CUSTOM_CSS = [
+    "vendor/quill/dist/quill.snow.css",
+    "vendor/@highlightjs/cdn-assets/styles/darcula.min.css",
+]
+```
+
+This setup allows you to use npm packages as static files in your Django project, making it easier to manage and update dependencies.
 
 ## Running the Live Demo project in local
 
@@ -95,7 +165,7 @@ After cloning or downloading the repository, you can try running the live demo l
 
 **A Python virtual environment is required to run the project.**
 
-```shell
+
 # [Optional] We recommend that you start after creating a folder for your project.
 mkdir ~/projects
 cd projects
@@ -116,11 +186,9 @@ pip install -r requirements.txt
 # Run migrate and runserver
 python manage.py migrate
 python manage.py runserver
-```
+
 
 After the above operation, the live demo site works at localhost:8000.
-
-
 
 ## Contributing
 
